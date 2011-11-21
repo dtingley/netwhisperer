@@ -1,6 +1,7 @@
 from collections import namedtuple
 import re
 import string
+import logging
 
 class Files:
     dictionary = "dataset/nettalk.data"
@@ -11,7 +12,7 @@ Word = namedtuple('Word', ['letters', 'phonemes', 'structure', 'correspondance']
 letters = string.ascii_lowercase
 
 phoneme_traits = frozenset([
-    'front1',
+    'front1', 
     'front2',
     'central1',
     'central2',
@@ -23,7 +24,7 @@ phoneme_traits = frozenset([
     'affricative',
     'glide',
     'liquid',
-    'voiced',
+    'voiced',       # 'unvoiced' is the default
     'tensed',
     'high',
     'medium',
@@ -33,20 +34,31 @@ phoneme_traits = frozenset([
     'pause',
     'full_stop',
     'stress1',
-    'stress2',
+    'stress3',      # 'stress2' is the default
     'syllable_boundary'
 ])
 
-phoeneme_ignore_traits = frozenset([
-    'unvoiced'
-])
+phoneme_trait_map = {
+    'labial' : 'front1',
+    'dental' : 'front2',
+    'alveolar' : 'central1',
+    'palatal' : 'central2',
+    'velar' : 'back1',
+    'glottal' : 'back2'
+}
+phoneme_trait_map.update(dict({(t,t) for t in phoneme_traits}))
 
 phonemes_data = [
     ('a', ['low', 'tensed', 'central2']),
     ('b', ['voiced', 'labial', 'stop']),
 ]
-# encapsulate traits in frozenset
-phonemes = dict({(n, frozenset(f)) for n, f in phonemes_data})
+# encapsulate mapped traits in frozenset
+phonemes = {}
+for name, traits in phonemes_data:
+    phonemes[name] = frozenset(phoneme_trait_map[t] for t in traits)
+    
+# make sure there are no errors
+assert all({t.issubset(phoneme_traits) for t in phonemes.values()})
 
 def loadDictionary():
     dictionary = {}
@@ -57,7 +69,7 @@ def loadDictionary():
             cols = line.split('\t')
             # skip lines that don't appear to be dictionary entries
             if len(cols) != 4:
-                print 'skipping line "%s"' % line
+                logging.debug('skipping line: %s' % line)
                 continue
             else:
                 word = Word(*cols)
