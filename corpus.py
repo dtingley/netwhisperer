@@ -9,7 +9,7 @@ class Files:
 
 Word = namedtuple('Word', ['letters', 'phonemes', 'structure', 'correspondance'])
 
-letters = string.ascii_lowercase
+letters = string.ascii_lowercase + ',' + '.' + ' '
 
 phoneme_traits = frozenset([
     'front1', 
@@ -48,11 +48,13 @@ phoneme_trait_map = {
 }
 phoneme_trait_map.update(dict({(t,t) for t in phoneme_traits}))
 
+# Mikkel will finish this
 phonemes_data = [
     ('a', ['low', 'tensed', 'central2']),
     ('b', ['voiced', 'labial', 'stop']),
 ]
-# encapsulate mapped traits in frozenset
+
+# encapsulate mapped traits
 phonemes = {}
 for name, traits in phonemes_data:
     phonemes[name] = frozenset(phoneme_trait_map[t] for t in traits)
