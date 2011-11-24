@@ -54,17 +54,18 @@ phonemes_data = [
     ('b', ['voiced', 'labial', 'stop']),
 ]
 # map synonyms
-for traits in phonemes_data.values:
-    for (i, trait) in enumerate(traits):
+for phoneme in phonemes_data:
+    for (i, trait) in enumerate(phoneme[1]):
         if trait in phoneme_trait_synonyms:
             traits[i] = phoneme_trait_synonyms[trait]
 
 # encapsulate mapped traits
-phoneme_traits = dict(phonemes_data)
+phoneme_traits = dict({(name, frozenset(traits)) for name, traits in phonemes_data})
     
 # make sure there are no errors
-assert all({traits.issubset(all_phoneme_traits) for traits in phoneme_traits.itervalues()})
-
+for traits in phoneme_traits.itervalues():
+    assert traits.issubset(all_phoneme_traits), 'one is a bad trait: %s' % traits
+    
 def loadDictionary():
     dictionary = {}
     with open(Files.dictionary) as f:
