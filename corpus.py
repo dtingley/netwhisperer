@@ -62,7 +62,7 @@ phonemes_data = [
     ('f', ['unvoiced', 'labial', 'fricative']),
     ('g', ['voiced', 'velar', 'stop']),
     ('h', ['unvoiced', 'glottal', 'glide']),
-    ('j', ['high', 'tensed', 'front1']),
+    ('i', ['high', 'tensed', 'front1']),
     ('k', ['unvoiced', 'velar', 'stop']),
     ('l', ['voiced', 'dental', 'liquid']),
     ('m', ['voiced', 'labial', 'nasal']),
