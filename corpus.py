@@ -57,7 +57,7 @@ phonemes_data = [
 for phoneme in phonemes_data:
     for (i, trait) in enumerate(phoneme[1]):
         if trait in phoneme_trait_synonyms:
-            traits[i] = phoneme_trait_synonyms[trait]
+            phoneme[1][i] = phoneme_trait_synonyms[trait]
 
 # encapsulate mapped traits
 phoneme_traits = dict({(name, frozenset(traits)) for name, traits in phonemes_data})
