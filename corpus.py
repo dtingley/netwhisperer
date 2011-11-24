@@ -9,9 +9,9 @@ class Files:
 
 Word = namedtuple('Word', ['letters', 'phonemes', 'structure', 'correspondance'])
 
-letters = string.ascii_lowercase + ',' + '.' + ' '
+all_letters = string.ascii_lowercase + ',' + '.' + ' '
 
-phoneme_traits = frozenset([
+all_phoneme_traits = frozenset([
     'front1', 
     'front2',
     'central1',
@@ -38,7 +38,8 @@ phoneme_traits = frozenset([
     'syllable_boundary'
 ])
 
-phoneme_trait_map = {
+# synonyms for the same phoneme traits
+phoneme_trait_synonyms = {
     'labial' : 'front1',
     'dental' : 'front2',
     'alveolar' : 'central1',
@@ -46,21 +47,23 @@ phoneme_trait_map = {
     'velar' : 'back1',
     'glottal' : 'back2'
 }
-phoneme_trait_map.update(dict({(t,t) for t in phoneme_traits}))
 
 # Mikkel will finish this
 phonemes_data = [
     ('a', ['low', 'tensed', 'central2']),
     ('b', ['voiced', 'labial', 'stop']),
 ]
+# map synonyms
+for traits in phonemes_data.values:
+    for (i, trait) in enumerate(traits):
+        if trait in phoneme_trait_synonyms:
+            traits[i] = phoneme_trait_synonyms[trait]
 
 # encapsulate mapped traits
-phonemes = {}
-for name, traits in phonemes_data:
-    phonemes[name] = frozenset(phoneme_trait_map[t] for t in traits)
+phoneme_traits = dict(phonemes_data)
     
 # make sure there are no errors
-assert all({t.issubset(phoneme_traits) for t in phonemes.values()})
+assert all({traits.issubset(all_phoneme_traits) for traits in phoneme_traits.itervalues()})
 
 def loadDictionary():
     dictionary = {}
