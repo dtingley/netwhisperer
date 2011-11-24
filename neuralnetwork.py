@@ -18,10 +18,20 @@ letters_to_neurons = dict(
     {(letter_and_pos, index) for index, letter_and_pos in enumerate(letter_neuron_names)}
 )
 
+def windowIter(letters):
+    assert type(letters) == str
+    padding_before = ' ' * window_middle
+    padding_after = ' ' * (window_size - window_middle - 1)
+    padded_letters = padding_before + letters + padding_after
+    # for each letter in the sample
+    for l_num in range(len(letters)):
+        letters_window = padded_letters[l_num:l_num+window_size]
+        yield letters_window
+
 def letters_to_layer(letters):
     assert len(letters) == window_size
     # start with empty layer
-    layer = numpy.zeros(len(letter_neuron_names))
+    layer = zeros(len(letter_neuron_names))
     # loop through letters and activate each neuron
     for (pos, letter) in enumerate(letters):
         index = letters_to_neurons[(letter, pos)]
@@ -55,18 +65,11 @@ def layer_to_phoneme(layer):
     def cos_to_input(item):
         phoneme, phoneme_layer = item
         return dot(layer,phoneme_layer) / norm(layer) / norm(phoneme_layer)
-        
+    # minimum angle should be maximum cos    
     return max(phonemes_to_layers.iteritems(), key=cos_to_input)[0]
 
 def wordSamples(word):
     assert len(word.letters) == len(word.phonemes)
-    # pad letters and phonemes to make our job easier
-    padding_before = ' ' * window_middle
-    padding_after = ' ' * (window_size - window_middle - 1)
-    padded_letters = padding_before + word.letters + padding_after
-    # for each letter in the sample
-    for l_num in range(len(word.letters)):
-        letters_window = padded_letters[l_num:l_num+window_size]
-        current_phoneme = word.phonemes[l_num]
+    for (letters_window, current_phoneme) in izip(windowIter(word.letters), word.phonemes):
         yield letters_to_layer(letters_window), phoneme_to_layer(current_phoneme)        
             
