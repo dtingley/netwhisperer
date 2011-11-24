@@ -20,12 +20,8 @@ def datasetTop1000Words():
     # build data set    
     dataset = SupervisedDataSet( len(nn.input_neurons), len(nn.output_neurons) )
     for word in corpus.top1000words:
-        assert len(word.letters) == len(word.phonemes)
-        # step each letter/phoneme over the input window
-        for i in range(len(word.letters)):
-            inputWindow = (0,) * ceil(0,)
-            orepr = nn.outputRepresentation(phoneme)
-            dataset.addSample( word.letters, orepr )
+        for sample in nn.wordSamples(word):
+            dataset.addSample(*sample)
             
     return dataset
 
@@ -37,14 +33,14 @@ def main():
     network = buildNetwork( len(nn.input_neurons), n_hidden_neurons, len(nn.output_neurons) )
 
     # get dataset
-    dataset = datasetTop1000Words(network)
+    dataset = datasetTop1000Words()
 
     # train network
     trainer = BackpropTrainer(network, dataset)
-    for n in range(args['cycles']):
+    for n in range(args['n_epochs']):
         print trainer.train()
     
-    
+    pickle.dump(net1, open(args['output'], 'w'))
     
 def processOptions():
     parser = argparse.ArgumentParser(description='Generate neural network.')
