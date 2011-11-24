@@ -6,12 +6,12 @@ window_size = 7
 # zero-indexed middle of window
 window_middle = 3
 # one neuron for each window/letter combination
-input_neurons = list( product( corpus.letters, range(window_size) ) )
+input_neurons = list( product( corpus.all_letters, range(window_size) ) )
 empty_input = (0,) * len(input_neurons)
 # mapping from (letter, pos) to input neuron index
 letters_to_neurons = dict({(letter_and_pos, index) for index, letter_and_pos in enumerate(input_neurons)})
 # one neuron for each phoneme trait
-output_neurons = corpus.phoneme_traits
+output_neurons = corpus.all_phoneme_traits
 empty_output = (0,) * len(output_neurons)
 # mapping from phoneme trait to output neuron index
 traits_to_neurons = dict({(trait, index) for index, trait in enumerate(output_neurons)})
@@ -31,7 +31,7 @@ def wordSamples(word):
             neuron_index = letters_to_neurons[(letter, pos)]
             inp[neuron_index] = 1
         out = list(empty_output)
-        for trait in corpus.phonemes[current_phoneme]:
+        for trait in corpus.phoneme_traits[current_phoneme]:
             trait_index = traits_to_neurons[trait]
             out[trait_index] = 1
         yield inp, out        
