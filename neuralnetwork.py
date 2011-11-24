@@ -1,20 +1,62 @@
 from itertools import *
+from numpy import array, zeros, dot, arccos
+from numpy.linalg import norm
 import corpus
 
+######### THESE SHOULD BE CONFIGURATION OPTIONS
 # look at 7 letters at once
 window_size = 7
 # zero-indexed middle of window
 window_middle = 3
+######### 
+
 # one neuron for each window/letter combination
-input_neurons = list( product( corpus.all_letters, range(window_size) ) )
-empty_input = (0,) * len(input_neurons)
+letter_neuron_names = list( product( corpus.all_letters, range(window_size) ) )
+
 # mapping from (letter, pos) to input neuron index
-letters_to_neurons = dict({(letter_and_pos, index) for index, letter_and_pos in enumerate(input_neurons)})
+letters_to_neurons = dict(
+    {(letter_and_pos, index) for index, letter_and_pos in enumerate(letter_neuron_names)}
+)
+
+def letters_to_layer(letters):
+    assert len(letters) == window_size
+    # start with empty layer
+    layer = numpy.zeros(len(letter_neuron_names))
+    # loop through letters and activate each neuron
+    for (pos, letter) in enumerate(letters):
+        index = letters_to_neurons[(letter, pos)]
+        layer[index] = 1
+    return layer
+
 # one neuron for each phoneme trait
-output_neurons = corpus.all_phoneme_traits
-empty_output = (0,) * len(output_neurons)
-# mapping from phoneme trait to output neuron index
-traits_to_neurons = dict({(trait, index) for index, trait in enumerate(output_neurons)})
+phoneme_trait_neuron_names = list(corpus.all_phoneme_traits)
+
+# mapping from trait to neuron
+traits_to_neurons = dict(
+    {(trait, index) for index, trait in enumerate(phoneme_trait_neuron_names)}
+)
+
+# mapping from phoneme to layer
+phonemes_to_layers = {}
+for (phoneme, traits) in corpus.phoneme_traits.iteritems():
+    layer = zeros(len(phoneme_trait_neuron_names))
+    for trait in traits:
+        index = traits_to_neurons[trait]
+        layer[index] = 1
+    phonemes_to_layers[phoneme] = layer
+
+# reverse the mapping
+#layers_to_phonemes = dict({(l,p) for p,l in phonemes_to_layers.iteritems()})
+
+def phoneme_to_layer(phoneme):
+    return phonemes_to_layers[phoneme]
+
+def layer_to_phoneme(layer):
+    def cos_to_input(item):
+        phoneme, phoneme_layer = item
+        return dot(layer,phoneme_layer) / norm(layer) / norm(phoneme_layer)
+        
+    return max(phonemes_to_layers.iteritems(), key=cos_to_input)[0]
 
 def wordSamples(word):
     assert len(word.letters) == len(word.phonemes)
@@ -24,15 +66,7 @@ def wordSamples(word):
     padded_letters = padding_before + word.letters + padding_after
     # for each letter in the sample
     for l_num in range(len(word.letters)):
-        letters_window = padded_letters[l_num:l_num+window_size-1]
+        letters_window = padded_letters[l_num:l_num+window_size]
         current_phoneme = word.phonemes[l_num]
-        inp = list(empty_input)
-        for pos, letter in enumerate(letters_window):
-            neuron_index = letters_to_neurons[(letter, pos)]
-            inp[neuron_index] = 1
-        out = list(empty_output)
-        for trait in corpus.phoneme_traits[current_phoneme]:
-            trait_index = traits_to_neurons[trait]
-            out[trait_index] = 1
-        yield inp, out        
+        yield letters_to_layer(letters_window), phoneme_to_layer(current_phoneme)        
             
