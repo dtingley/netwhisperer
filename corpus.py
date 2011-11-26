@@ -32,7 +32,10 @@ all_phoneme_traits = frozenset([
     'silent',
     'elide',
     'pause',
-    'full stop',
+    'full stop'
+])
+
+all_stress_traits = frozenset([
     'stress1',
     'stress3',      # 'stress2' is the default
     'syllable_boundary'
