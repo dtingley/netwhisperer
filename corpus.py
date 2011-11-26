@@ -38,7 +38,7 @@ all_phoneme_traits = frozenset([
 all_stress_traits = frozenset([
     'stress1',
     'stress3',      # 'stress2' is the default
-    'syllable_boundary'
+    'syllable boundary'
 ])
 
 # synonyms for the same phoneme traits
