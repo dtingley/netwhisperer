@@ -46,8 +46,9 @@ def main():
     training_set = datasetTop1000Words(network)
     trainer = Trainer(network.pybrain_network, training_set)
 
+    print 'Your network is being trained.'
     for n in range(args.n_epochs):
-        print trainer.train()
+        print 'Error at epoch %d: %f' % (n, trainer.train())
     
     pickle.dump(network, args.outfile)
         
