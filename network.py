@@ -58,9 +58,9 @@ class Network:
     def wordSamples(self, word):
         assert len(word.letters) == len(word.phonemes)
         for (letters_window, current_phoneme) in izip(self.windowIter(word.letters), word.phonemes):
-            yield self._letters_to_layer(letters_window), self.phoneme_to_layer(current_phoneme)
+            yield self.letters_to_layer(letters_window), self.phoneme_to_layer(current_phoneme)
 
-    def _letters_to_layer(self, letters):
+    def letters_to_layer(self, letters):
         assert len(letters) == self.window_size
         # start with empty layer
         layer = zeros(self.n_input_neurons)
