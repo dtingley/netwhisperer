@@ -15,7 +15,7 @@ class Network:
             phoneme, phoneme_layer = item
             return dot(layer,phoneme_layer) / norm(layer) / norm(phoneme_layer)
         # minimum angle should be maximum cos    
-        return max(phonemes_to_layers.iteritems(), key=cos_to_input)[0]    
+        return max(self.phonemes_to_layers.iteritems(), key=cos_to_input)[0]    
 
     def __init__(self, window_size, window_middle, n_hidden_neurons):
         self.window_size = window_size
