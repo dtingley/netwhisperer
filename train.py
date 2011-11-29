@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 
-# This script generates a PyBrain neural network given input parameters.
-# Usage:
-#   generate.py trainingDictionary nPasses networkOutput
-
 import sys
 import string
 import argparse
