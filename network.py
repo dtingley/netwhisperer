@@ -102,7 +102,7 @@ class Network:
             layer[index] = 1
         return layer
         
-    def train(self, training_set, n_epochs=1):
+    def train(self, training_set, n_epochs=1, callback=None):
         # build dataset
         dataset = DataSet(self.n_input_neurons, self.n_output_neurons)
         for word in training_set:
@@ -111,6 +111,8 @@ class Network:
         # build trainer
         trainer = Trainer(self._pybrain_network, dataset)
         for i in xrange(n_epochs):
+            # run callback if present
+            if callback: callback()
             # train network
             error = trainer.train()
             # record training errors

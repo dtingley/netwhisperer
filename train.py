@@ -37,7 +37,8 @@ def main():
     training_set = datasetTop1000Words(network)
 
     print 'Your network is being trained.'
-    network.train(training_set, args.n_epochs)
+    def print_dot(): print '.',
+    network.train(training_set, args.n_epochs, callback=print_dot)
     
     pickle.dump(network, args.outfile)
         
