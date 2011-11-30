@@ -25,7 +25,7 @@ def main():
         phonemes = ''
         for window in network.windowIter(line):
             input_layer = network.letters_to_layer(window)
-            output_layer = network.pybrain_network.activate(input_layer)
+            output_layer = network._pybrain_network.activate(input_layer)
             phoneme = network.layer_to_phoneme(output_layer)
             phonemes += phoneme
         print phonemes
