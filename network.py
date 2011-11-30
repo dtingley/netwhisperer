@@ -1,7 +1,10 @@
 from itertools import *
 from numpy import array, zeros, dot, arccos
 from numpy.linalg import norm
-from pybrain.tools.shortcuts import buildNetwork
+
+from pybrain.structure.networks.feedforward import FeedForwardNetwork
+from pybrain.structure.modules import BiasUnit, SigmoidLayer, LinearLayer
+from pybrain.structure.connections import FullConnection
 from pybrain.datasets import SupervisedDataSet as DataSet
 from pybrain.supervised.trainers import BackpropTrainer as Trainer
 
@@ -27,7 +30,7 @@ class Network:
         self.n_trainings = 0
         self.training_errors = []
         self._init_layers()
-        self.pybrain_network = buildNetwork(self.n_input_neurons, self.n_hidden_neurons, self.n_output_neurons)
+        self._generate_pybrain_network()
         
     def _init_layers(self):
         # one neuron for each window/letter combination
@@ -49,6 +52,30 @@ class Network:
                 index = self.traits_to_neurons[trait]
                 layer[index] = 1
             self.phonemes_to_layers[phoneme] = layer
+            
+    def _generate_pybrain_network(self):
+        # make network
+        self._pybrain_network = FeedForwardNetwork()
+        # make layers
+        self._in_layer = LinearLayer(self.n_input_neurons, name='in')
+        self._hidden_layer = SigmoidLayer(self.n_hidden_neurons, name='hidden')
+        self._out_layer = LinearLayer(self.n_output_neurons, name='out')
+        self._bias_neuron = BiasUnit(name='bias')
+        # make connections between layers
+        self._in_hidden_connection = FullConnection(self._in_layer, self._hidden_layer)
+        self._hidden_out_connection = FullConnection(self._hidden_layer, self._out_layer)
+        self._bias_hidden_connection = FullConnection(self._bias_neuron, self._hidden_layer)
+        self._bias_out_connection = FullConnection(self._bias_neuron, self._out_layer)
+        # add modules to network
+        self._pybrain_network.addInputModule(self._in_layer)
+        self._pybrain_network.addModule(self._hidden_layer)
+        self._pybrain_network.addOutputModule(self._out_layer)
+        self._pybrain_network.addModule(self._bias_neuron)
+        # add connections to network
+        for c in (self._in_hidden_connection, self._hidden_out_connection, self._bias_hidden_connection, self._bias_out_connection):
+            self._pybrain_network.addConnection(c)
+        # initialize network with added modules/connections
+        self._pybrain_network.sortModules()
 
     def windowIter(self, letters):
         assert type(letters) == str
@@ -82,10 +109,22 @@ class Network:
             for sample in self.generateSamples(word):
                 dataset.addSample(*sample)
         # build trainer
-        trainer = Trainer(self.pybrain_network, dataset)
+        trainer = Trainer(self._pybrain_network, dataset)
         for i in xrange(n_epochs):
             # train network
             error = trainer.train()
             # record training errors
             self.n_trainings = self.n_trainings + 1
             self.training_errors.append(error)
+            
+    def getInputHiddenWeights(self):
+        return self._in_hidden_connection.params.reshape((self.n_input_neurons, self.n_hidden_neurons))
+        
+    def getHiddenOutputWeights(self):
+        return self._hidden_out_connection.params.reshape((self.n_hidden_neurons, self.n_output_neurons))
+
+    def getHiddenThresholds(self):
+        return self._bias_hidden_connection.params
+        
+    def getOutputThresholds(self):
+        return self._bias_out_connection.params
