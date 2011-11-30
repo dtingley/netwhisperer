@@ -2,6 +2,9 @@ from itertools import *
 from numpy import array, zeros, dot, arccos
 from numpy.linalg import norm
 from pybrain.tools.shortcuts import buildNetwork
+from pybrain.datasets import SupervisedDataSet as DataSet
+from pybrain.supervised.trainers import BackpropTrainer as Trainer
+
 import corpus
 
 class Network:
@@ -21,6 +24,8 @@ class Network:
         self.window_size = window_size
         self.window_middle = window_middle
         self.n_hidden_neurons = n_hidden_neurons
+        self.n_trainings = 0
+        self.training_errors = []
         self._init_layers()
         self.pybrain_network = buildNetwork(self.n_input_neurons, self.n_hidden_neurons, self.n_output_neurons)
         
@@ -55,7 +60,7 @@ class Network:
             letters_window = padded_letters[l_num:l_num+self.window_size]
             yield letters_window    
 
-    def wordSamples(self, word):
+    def generateSamples(self, word):
         assert len(word.letters) == len(word.phonemes)
         for (letters_window, current_phoneme) in izip(self.windowIter(word.letters), word.phonemes):
             yield self.letters_to_layer(letters_window), self.phoneme_to_layer(current_phoneme)
@@ -69,8 +74,18 @@ class Network:
             index = self.letters_to_neurons[(letter, pos)]
             layer[index] = 1
         return layer
-
-
-
-     
-            
+        
+    def train(self, training_set, n_epochs=1):
+        # build dataset
+        dataset = DataSet(self.n_input_neurons, self.n_output_neurons)
+        for word in training_set:
+            for sample in self.generateSamples(word):
+                dataset.addSample(*sample)
+        # build trainer
+        trainer = Trainer(self.pybrain_network, dataset)
+        for i in xrange(n_epochs):
+            # train network
+            error = trainer.train()
+            # record training errors
+            self.n_trainings = self.n_trainings + 1
+            self.training_errors.append(error)

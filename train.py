@@ -5,26 +5,21 @@ import string
 import argparse
 from itertools import *
 import cPickle as pickle
-from pybrain.datasets            import SupervisedDataSet
-from pybrain.supervised.trainers import BackpropTrainer as Trainer
 import corpus
 from network import Network
 
 DEFAULT_N_HIDDEN_NEURONS = 120
 
 def datasetTop1000Words(net):
-    # build data set    
-    dataset = SupervisedDataSet( net.n_input_neurons, net.n_output_neurons )
+    'build data set for training'
+    
     letters = ''
     phonemes = ''
     for word in corpus.top1000words:
         letters += word.letters + ' '
         phonemes += word.phonemes + ' '
-    word = corpus.Word(letters, phonemes, '', 0)
-    for sample in net.wordSamples(word):
-        dataset.addSample(*sample)
             
-    return dataset
+    return [corpus.Word(letters, phonemes, None, None)]
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Train a NETwhisperer network.')
@@ -40,11 +35,9 @@ def main():
         
     network = Network(args.window_size, (args.window_size-1)/2, args.n_hidden_neurons)
     training_set = datasetTop1000Words(network)
-    trainer = Trainer(network.pybrain_network, training_set)
 
     print 'Your network is being trained.'
-    for n in range(args.n_epochs):
-        print 'Error at epoch %d: %f' % (n, trainer.train())
+    network.train(training_set, args.n_epochs)
     
     pickle.dump(network, args.outfile)
         
