@@ -19,6 +19,10 @@ def main():
     
     mdict = {
         'training_errors': network.training_errors,
+        'input_hidden_weights': network.getInputHiddenWeights(),
+        'hidden_output_weights': network.getHiddenOutputWeights(),
+        'output_thresholds': network.getOutputThresholds(),
+        'hidden_thresholds': network.getHiddenThresholds()
     }
     io.savemat(args.matfile, mdict, oned_as='row')
     
