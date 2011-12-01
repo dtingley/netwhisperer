@@ -14,6 +14,7 @@ def to_espeak(input):
     output += ']]"'
     f = open('to_espeak.txt', 'w')
     f.write(output)
+    f.close
     return output
 
 def getPhonemeMapping():
@@ -35,7 +36,7 @@ def getPhonemeMapping():
                  'r':'r',
                  's':'s',
                  't':'t',
-                 'u':'V',
+                 'u':'u:',
                  'v':'v',
                  'w':'w',
                  'x':'a2',
@@ -50,8 +51,8 @@ def getPhonemeMapping():
                  'J':'dZ',
                  'K':'kZ',
                  'L':'@L',
-                 'M':'', # I have no idea how to interpret this one from the nettalk paper
-                 'N':'', # I can't find an equivallent for this
+                 'M':'im', # I have no idea how to interpret this one from the nettalk paper
+                 'N':'Un', # I can't find an equivallent for this
                  'O':'oi',
                  'Q':'kUE', # Totally made this up
                  'R':'3',
@@ -60,19 +61,19 @@ def getPhonemeMapping():
                  'U':'U',
                  'W':'aU',
                  'X':'ks', 
-                 'Y':'U:',
+                 'Y':'ju:',
                  'Z':'Z',
                  '@':'@',
                  '!':'tz', #From here and under a lot the translations are just made up by a non-native english speaker
                  '#':'ks',
-                 '*':'',
-                 ':':'',
-                 '^':'',
+                 '*':'wO',
+                 ':':'k',
+                 '^':'v',
                  '-':'_',
                  ' ':'||',
                  '.':'',
-                 '':'\'', #primary stress
-                 '':','}) #secondary stress
+                 '1':'\'', #primary stress
+                 '2':','}) #secondary stress
 
 #http://espeak.sourceforge.net/dictionary.html - list of utility phonemes
 #The left side of this dictionary can be found on page 4 in the netTalk-paper
