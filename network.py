@@ -109,7 +109,7 @@ class Network:
             for sample in self.generateSamples(ltr,ph):
                 dataset.addSample(*sample)
         # build trainer
-        trainer = Trainer(self._pybrain_network, dataset)
+        trainer = Trainer(self._pybrain_network, dataset, 0.01, 1.0, 0.9)
         for i in xrange(n_epochs):
             # run callback if present
             if callback: callback()
