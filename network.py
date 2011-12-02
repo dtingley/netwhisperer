@@ -87,9 +87,9 @@ class Network:
             letters_window = padded_letters[l_num:l_num+self.window_size]
             yield letters_window    
 
-    def generateSamples(self, word):
-        assert len(word.letters) == len(word.phonemes)
-        for (letters_window, current_phoneme) in izip(self.windowIter(word.letters), word.phonemes):
+    def generateSamples(self, letters, phonemes):
+        assert len(letters) == len(phonemes)
+        for (letters_window, current_phoneme) in izip(self.windowIter(letters), phonemes):
             yield self.letters_to_layer(letters_window), self.phoneme_to_layer(current_phoneme)
 
     def letters_to_layer(self, letters):
@@ -105,8 +105,8 @@ class Network:
     def train(self, training_set, n_epochs=1, callback=None):
         # build dataset
         dataset = DataSet(self.n_input_neurons, self.n_output_neurons)
-        for word in training_set:
-            for sample in self.generateSamples(word):
+        for (ltr,ph) in training_set:
+            for sample in self.generateSamples(ltr,ph):
                 dataset.addSample(*sample)
         # build trainer
         trainer = Trainer(self._pybrain_network, dataset)
@@ -130,3 +130,10 @@ class Network:
         
     def getOutputThresholds(self):
         return self._bias_out_connection.params
+        
+    def lettersToPhonemes(self, letters):
+        for window in self.windowIter(letters):
+            input_layer = self.letters_to_layer(window)
+            output_layer = self._pybrain_network.activate(input_layer)
+            phoneme = self.layer_to_phoneme(output_layer)
+            yield phoneme
