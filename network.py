@@ -120,10 +120,10 @@ class Network:
             self.training_errors.append(error)
             
     def getInputHiddenWeights(self):
-        return self._in_hidden_connection.params.reshape((self.n_input_neurons, self.n_hidden_neurons))
+        return self._in_hidden_connection.params.reshape((self.n_hidden_neurons, self.n_input_neurons))
         
     def getHiddenOutputWeights(self):
-        return self._hidden_out_connection.params.reshape((self.n_hidden_neurons, self.n_output_neurons))
+        return self._hidden_out_connection.params.reshape((self.n_output_neurons, self.n_hidden_neurons))
 
     def getHiddenThresholds(self):
         return self._bias_hidden_connection.params
