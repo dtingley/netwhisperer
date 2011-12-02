@@ -21,7 +21,7 @@ def main():
     while 1:
         line = raw_input()
         if not line: break
-        print network.lettersToPhonemes(line)
+        print ''.join(network.lettersToPhonemes(line))
 
 if __name__ == '__main__':
     main()
