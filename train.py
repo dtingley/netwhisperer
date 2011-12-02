@@ -43,8 +43,10 @@ def main():
         print 'Training using generated strings from dictionary.'
         training_set = datasetGeneratedText(network)
 
-    print 'Your network is being trained.'
-    def print_dot(): print '.',
+    print 'Your network is being trained..',
+    def print_dot():
+        print '%d..' % (network.n_trainings+1),
+        sys.stdout.flush()
     network.train(training_set, args.n_epochs, callback=print_dot)
     
     pickle.dump(network, args.outfile)
