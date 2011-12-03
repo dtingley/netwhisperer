@@ -1,57 +1,55 @@
 #!/usr/bin/env python
 
-# This script generates a PyBrain neural network given input parameters.
-# Usage:
-#   generate.py trainingDictionary nPasses networkOutput
-
-import argparse
+import sys
 import string
+import argparse
 from itertools import *
 import cPickle as pickle
-from pybrain.datasets            import SupervisedDataSet
-from pybrain.tools.shortcuts     import buildNetwork
-from pybrain.supervised.trainers import BackpropTrainer
 import corpus
-import neuralnetwork as nn
+from network import Network
 
-n_hidden_neurons = 120
+DEFAULT_N_HIDDEN_NEURONS = 120
 
-def datasetTop1000Words():
-    # build data set    
-    dataset = SupervisedDataSet( len(nn.input_neurons), len(nn.output_neurons) )
+def datasetDictionary(net):
+    for w in corpus.top1000words:
+        yield w.letters, w.phonemes
+
+def datasetGeneratedText(net):
+    letters = ''
+    phonemes = ''
     for word in corpus.top1000words:
-        assert len(word.letters) == len(word.phonemes)
-        # step each letter/phoneme over the input window
-        for i in range(len(word.letters)):
-            inputWindow = (0,) * ceil(0,)
-            orepr = nn.outputRepresentation(phoneme)
-            dataset.addSample( word.letters, orepr )
+        letters += word.letters + ' '
+        phonemes += word.phonemes + ' '
             
-    return dataset
+    return [corpus.Word(letters, phonemes, None, None)]
+
+def parseArgs():
+    parser = argparse.ArgumentParser(description='Train a NETwhisperer network.')
+    parser.add_argument('outfile', type=argparse.FileType('w'))
+    parser.add_argument('--dict', action='store_true', help='train against individual words in dictionary')
+    parser.add_argument('-e', '--epochs', dest="n_epochs", type=int, default=10)
+    parser.add_argument('-n', '--n-hidden-neurons', dest="n_hidden_neurons", type=int, default=DEFAULT_N_HIDDEN_NEURONS)
+    parser.add_argument('-w', '--window-size', dest="window_size", type=int, default=7)
+    return parser.parse_args()
 
 def main():
-    # process command line options
-    args = processOptions()
+    args = parseArgs()
+        
+    network = Network(args.window_size, (args.window_size-1)/2, args.n_hidden_neurons)
+    if args.dict:
+        print 'Training using individual words from top 1000 dictionary.'
+        training_set = datasetDictionary(network)
+    else:
+        print 'Training using generated strings from dictionary.'
+        training_set = datasetGeneratedText(network)
 
-    # build network
-    network = buildNetwork( len(nn.input_neurons), n_hidden_neurons, len(nn.output_neurons) )
-
-    # get dataset
-    dataset = datasetTop1000Words(network)
-
-    # train network
-    trainer = BackpropTrainer(network, dataset)
-    for n in range(args['cycles']):
-        print trainer.train()
+    print 'Your network is being trained..',
+    def print_dot():
+        print '%d..' % (network.n_trainings+1),
+        sys.stdout.flush()
+    network.train(training_set, args.n_epochs, callback=print_dot)
     
-    
-    
-def processOptions():
-    parser = argparse.ArgumentParser(description='Generate neural network.')
-    parser.add_argument('output', nargs=1, help='file in which to save neural network')
-    return parser.parse_args()
-    
-
-    
+    pickle.dump(network, args.outfile)
+        
 if __name__ == '__main__':
     main()
