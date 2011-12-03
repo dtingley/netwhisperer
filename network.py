@@ -34,14 +34,14 @@ class Network:
         
     def _init_layers(self):
         # one neuron for each window/letter combination
-        self.letter_neuron_names = list(product(corpus.all_letters, range(self.window_size)))
+        self.letter_neuron_names = list(product(range(self.window_size), corpus.all_letters))
         # one neuron for each phoneme trait
         self.phoneme_trait_neuron_names = list(corpus.all_phoneme_traits)
         # neuron counts
         self.n_input_neurons = len(self.letter_neuron_names)
         self.n_output_neurons = len(self.phoneme_trait_neuron_names)        
-        # mapping from (letter, pos) to input neuron index
-        self.letters_to_neurons = dict({(letter_and_pos, index) for index, letter_and_pos in enumerate(self.letter_neuron_names)})
+        # mapping from (pos, letter) to input neuron index
+        self.letters_to_neurons = dict({(pos_and_letter, index) for index, pos_and_letter in enumerate(self.letter_neuron_names)})
         # mapping from trait to neuron
         self.traits_to_neurons = dict({(trait, index) for index, trait in enumerate(self.phoneme_trait_neuron_names)})
         # mapping from phoneme to layer
@@ -98,7 +98,7 @@ class Network:
         layer = zeros(self.n_input_neurons)
         # loop through letters and activate each neuron
         for (pos, letter) in enumerate(letters):
-            index = self.letters_to_neurons[(letter, pos)]
+            index = self.letters_to_neurons[(pos, letter)]
             layer[index] = 1
         return layer
         
