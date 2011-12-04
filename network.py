@@ -137,3 +137,8 @@ class Network:
             output_layer = self._pybrain_network.activate(input_layer)
             phoneme = self.layer_to_phoneme(output_layer)
             yield phoneme
+    
+    def addRandomWeights(self, rand_fn):
+        all_weights = chain(self._in_hidden_connection.params, self._hidden_out_connection.params)
+        for w in all_weights:
+            w += rand_fn()
