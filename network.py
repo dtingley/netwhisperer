@@ -139,6 +139,8 @@ class Network:
             yield phoneme
     
     def addRandomWeights(self, rand_fn):
-        all_weights = chain(self._in_hidden_connection.params, self._hidden_out_connection.params)
-        for w in all_weights:
-            w += rand_fn()
+         cons = (self._in_hidden_connection, self._hidden_out_connection)
+         for c in cons:
+             for i in xrange(len(c.params)):
+                c.params[i] += rand_fn()
+             
