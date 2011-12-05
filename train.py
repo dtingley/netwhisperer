@@ -21,7 +21,7 @@ def datasetGeneratedText(net):
         letters += word.letters + ' '
         phonemes += word.phonemes + ' '
             
-    return [corpus.Word(letters, phonemes, None, None)]
+    return (letters, phonemes]
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Train a NETwhisperer network.')
