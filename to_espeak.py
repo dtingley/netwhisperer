@@ -51,10 +51,10 @@ def getPhonemeMapping():
                  'J':'dZ',
                  'K':'kZ',
                  'L':'@L',
-                 'M':'im', # I have no idea how to interpret this one from the nettalk paper
-                 'N':'Un', # I can't find an equivallent for this
-                 'O':'oi',
-                 'Q':'kUE', # Totally made this up
+                 'M':'m', # I have no idea how to interpret this one from the nettalk paper [J: That's because it's not an english sound]
+                 'N':'n', # I can't find an equivallent for this [J: it's just a slightly different 'n']
+                 'O':'OI', # [J: was "oi"]
+                 'Q':'kw', # Totally made this up [J: 'qu' in quest is pronounced 'kw' ]
                  'R':'3',
                  'S':'S',
                  'T':'T',
@@ -63,17 +63,20 @@ def getPhonemeMapping():
                  'X':'ks', 
                  'Y':'ju:',
                  'Z':'Z',
-                 '@':'@',
-                 '!':'tz', #From here and under a lot the translations are just made up by a non-native english speaker
-                 '#':'ks',
-                 '*':'wO',
-                 ':':'k',
-                 '^':'v',
-                 '-':'_',
+                 '@':'a', # [J: was '@']
+                 #From here and under a lot the translations are just made up by a non-native english speaker [J: reviewed and edited]
+                 '!':'tz',
+                 '#':'gz',
+                 '*':'wV',
+                 ':':'I',
+                 '^':'V',
+                 '-':'', # [J: should not pause!]
                  ' ':'||',
-                 '.':'',
-                 '1':'\'', #primary stress
-                 '2':','}) #secondary stress
+                 # J: commented out
+                 #'.':'',
+                 #'1':'\'',
+                 #'2':','
+})
 
 #http://espeak.sourceforge.net/dictionary.html - list of utility phonemes
 #The left side of this dictionary can be found on page 4 in the netTalk-paper
