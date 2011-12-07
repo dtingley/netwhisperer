@@ -12,9 +12,9 @@ def to_espeak(input):
             output +=  data[letter] + '|' #adds a phoneme seperator after each phoneme
     
     output += ']]"'
-    f = open('to_espeak.txt', 'w')
-    f.write(output)
-    f.close
+    #f = open('to_espeak.txt', 'w')
+    #f.write(output)
+    #f.close
     return output
 
 def getPhonemeMapping():
