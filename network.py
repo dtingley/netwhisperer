@@ -10,16 +10,22 @@ from pybrain.supervised.trainers import BackpropTrainer as Trainer
 
 import corpus
 
+def _angle(l1,l2):
+    return arccos(_cos(l1,l2))
+
+def _cos(l1, l2):
+    return dot(l1,l2) / norm(l1) / norm(l2)
+
 class Network:
     "NETwhisperer neural network"
-    
+        
     def phoneme_to_layer(self, phoneme):
         return self.phonemes_to_layers[phoneme]
 
     def layer_to_phoneme(self, layer):
         def cos_to_input(item):
             phoneme, phoneme_layer = item
-            return dot(layer,phoneme_layer) / norm(layer) / norm(phoneme_layer)
+            return _cos(layer,phoneme_layer)
         # minimum angle should be maximum cos    
         return max(self.phonemes_to_layers.iteritems(), key=cos_to_input)[0]    
 
@@ -131,6 +137,14 @@ class Network:
     def getOutputThresholds(self):
         return self._bias_out_connection.params
         
+    def lettersToPhonemesWithAngles(self, letters, expected_phonemes):
+        for (window, exp_ph) in izip(self.windowIter(letters), expected_phonemes):
+            input_layer = self.letters_to_layer(window)
+            output_layer = self._pybrain_network.activate(input_layer)
+            phoneme = self.layer_to_phoneme(output_layer)
+            angle = _angle(output_layer, self.phoneme_to_layer(exp_ph))
+            yield (phoneme, angle)
+
     def lettersToPhonemes(self, letters):
         for window in self.windowIter(letters):
             input_layer = self.letters_to_layer(window)

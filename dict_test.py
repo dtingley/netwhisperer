@@ -21,14 +21,31 @@ def main():
     
     total = 0
     correct = 0
+    inputs = []
+    correct_outputs = []
+    produced_outputs = []
+    angles = []
     for w in corpus.top1000words:
-        produced_phonemes = network.lettersToPhonemes(w.letters)
+        res = network.lettersToPhonemesWithAngles(w.letters, w.phonemes)
+        pph, angs = izip(*res)
+        
+        inputs.extend(w.letters)
+        correct_outputs.extend(w.phonemes)
+        produced_outputs.extend(pph)
+        angles.extend(angs)
         total += len(w.letters)
-        correct += sum(int(a==b) for a,b in izip(produced_phonemes, w.phonemes))
+        correct += sum(int(a==b) for a,b in izip(pph, w.phonemes))
     
     percent_correct = 100.0 * correct / total
+    mdict = {
+        'percent_correct': percent_correct,
+        'inputs': inputs,
+        'correct_outputs': correct_outputs,
+        'produced_outputs': produced_outputs,
+        'angles': angles,  
+    }
     if (args.matfile):
-        io.savemat(args.matfile, {'percent_correct':percent_correct}, oned_as='row')
+        io.savemat(args.matfile, mdict, oned_as='row')
     print '%f%% correct' % percent_correct
     
 if __name__ == '__main__':
