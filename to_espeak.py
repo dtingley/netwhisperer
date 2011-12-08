@@ -68,7 +68,10 @@ def getPhonemeMapping():
                  '!':'tz',
                  '#':'gz',
                  '*':'wV',
+                 # not used in new data set
                  ':':'I',
+                 # only in new data set
+                 '+':'wa',
                  '^':'V',
                  '-':'', # [J: should not pause!]
                  ' ':'||',

@@ -106,7 +106,10 @@ phonemes_data = [
     ('!', ['unvoiced', 'labial', 'dental', 'affricative']),
     ('#', ['voiced', 'palatal', 'velar', 'affricative']),
     ('*', ['voiced', 'glide', 'front1', 'low', 'central1']),
-    (':', ['high', 'front1', 'front2']),
+    # Not found in new data set
+    #(':', ['high', 'front1', 'front2']),
+    # Found only in new data set, not original paper
+    ('+', ['voiced', 'glide', 'tensed', 'low', 'back2']),
     ('^', ['low', 'central1']),
     ('-', ['silent', 'elide']),
     (' ', ['pause', 'elide']),
