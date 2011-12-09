@@ -31,6 +31,8 @@ def main():
             print '%d..' % (i+1),
             sys.stdout.flush()
         
+        # skip French phoneme that wasn't in original corpus
+        if '+' in w.phonemes: continue
         res = network.lettersToPhonemesWithAngles(w.letters, w.phonemes)
         pph, angs = izip(*res)
         
