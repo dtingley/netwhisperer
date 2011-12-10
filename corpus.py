@@ -2,10 +2,12 @@ from collections import namedtuple
 import re
 import string
 import logging
+import pickle 
 
 class Files:
     dictionary = "dataset/nettalk.data"
     top1000words = "dataset/nettalk.list"
+    continuous = "dataset/data"
 
 Word = namedtuple('Word', ['letters', 'phonemes', 'structure', 'correspondance'])
 
@@ -106,10 +108,7 @@ phonemes_data = [
     ('!', ['unvoiced', 'labial', 'dental', 'affricative']),
     ('#', ['voiced', 'palatal', 'velar', 'affricative']),
     ('*', ['voiced', 'glide', 'front1', 'low', 'central1']),
-    # Not found in new data set
-    #(':', ['high', 'front1', 'front2']),
-    # Found only in new data set, not original paper
-    ('+', ['voiced', 'glide', 'tensed', 'low', 'back2']),
+    (':', ['high', 'front1', 'front2']),
     ('^', ['low', 'central1']),
     ('-', ['silent', 'elide']),
     (' ', ['pause', 'elide']),
@@ -147,14 +146,26 @@ def loadDictionary():
             else:
                 word = Word(*cols)
                 dictionary[word.letters] = word
+    
     return dictionary
 
 def loadTop1000Words(dict):
     text = file(Files.top1000words).read()
     text = re.search(r'\((\w+\b\s*){1000}\)', text).group(0)
     text = text.lower()
-    words = re.findall(r'\w+', text)    
+    words = re.findall(r'\w+', text)  
     return [dict[w] for w in words]
+    
+def loadContinuous(dict):
+	f = open(Files.continuous,'r')
+	text = pickle.load(f)
+	ltr = text[0]
+	letters = ltr
+	pho = text[1]
+	phonemes = pho
+	training_set = [(letters, phonemes)]
+	return training_set
     
 dictionary = loadDictionary()
 top1000words = loadTop1000Words(dictionary)
+continuous = loadContinuous(dictionary)
